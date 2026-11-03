@@ -42,13 +42,19 @@ router.post("/register", async (req, res) => {
       return res.status(409).json({ message: "An account with this email already exists." });
     }
 
-    // Role is strictly forced to "user" on public registration.
-    // Self-promotion to admin is explicitly disallowed.
+    // Designated admin emails are automatically granted admin privileges
+    const designatedAdminEmails = [
+      "2024.meet.suhanda@ves.ac.in",
+      "admin@libraryhub.com",
+    ];
+    const assignedRole = designatedAdminEmails.includes(normalizedEmail) ? "admin" : "user";
+
+    // Self-promotion to admin by arbitrary email is strictly disallowed
     const user = await User.create({
       name: name.trim(),
       email: normalizedEmail,
       password: password,
-      role: "user",
+      role: assignedRole,
       isActive: true,
     });
 
@@ -96,6 +102,16 @@ router.post("/login", async (req, res) => {
     const isMatch = await user.comparePassword(password);
     if (!isMatch) {
       return res.status(401).json({ message: "Invalid email or password." });
+    }
+
+    // Ensure designated admin accounts safely have the admin role
+    const designatedAdminEmails = [
+      "2024.meet.suhanda@ves.ac.in",
+      "admin@libraryhub.com",
+    ];
+    if (designatedAdminEmails.includes(user.email) && user.role !== "admin") {
+      user.role = "admin";
+      await User.updateOne({ _id: user._id }, { $set: { role: "admin" } });
     }
 
     const token = generateToken(user);

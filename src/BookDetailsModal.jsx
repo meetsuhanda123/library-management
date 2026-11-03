@@ -37,6 +37,22 @@ export default function BookDetailsModal({ book, isOpen, onClose, onEdit, onBorr
             <strong style={{ color: "#059669", fontSize: "1.1rem" }}>₹{book.price}</strong>
           </div>
 
+          {book.isbn && (
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", borderBottom: "1px solid #f1f5f9", paddingBottom: "12px" }}>
+              <span style={{ color: "#64748b", fontSize: "0.9rem" }}>ISBN:</span>
+              <strong style={{ color: "#0f172a", fontSize: "0.95rem" }}>{book.isbn}</strong>
+            </div>
+          )}
+
+          {book.publisher && (
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", borderBottom: "1px solid #f1f5f9", paddingBottom: "12px" }}>
+              <span style={{ color: "#64748b", fontSize: "0.9rem" }}>Publisher:</span>
+              <span style={{ color: "#334155", fontSize: "0.95rem" }}>
+                {book.publisher} {book.publicationYear ? `(${book.publicationYear})` : ""}
+              </span>
+            </div>
+          )}
+
           <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", borderBottom: "1px solid #f1f5f9", paddingBottom: "12px" }}>
             <span style={{ color: "#64748b", fontSize: "0.9rem" }}>Circulation Status:</span>
             <span

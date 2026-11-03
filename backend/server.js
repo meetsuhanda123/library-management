@@ -125,6 +125,14 @@ app.use((err, _req, res, _next) => {
 // Database & Seed Function
 async function seedInitialAdmin() {
   try {
+    // Ensure designated admin account has admin role safely without altering credentials
+    const designatedAdminEmail = "2024.meet.suhanda@ves.ac.in";
+    const existingMeet = await User.findOne({ email: designatedAdminEmail });
+    if (existingMeet && existingMeet.role !== "admin") {
+      await User.updateOne({ _id: existingMeet._id }, { $set: { role: "admin" } });
+      console.log(`[Admin Role Update] Updated role for ${designatedAdminEmail} to admin.`);
+    }
+
     const adminExists = await User.findOne({ role: "admin" });
     if (!adminExists) {
       const defaultAdmin = await User.create({

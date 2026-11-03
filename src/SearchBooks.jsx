@@ -24,7 +24,7 @@ const CATEGORIES = [
 ];
 
 export default function SearchBooks() {
-  const { user } = useLibrary();
+  const { user, isAdmin } = useLibrary();
   const { showToast } = useToast();
   const navigate = useNavigate();
 
@@ -190,17 +190,19 @@ export default function SearchBooks() {
             <option value="price-desc">Price: High to Low</option>
           </select>
 
-          <button
-            type="button"
-            className="main-button"
-            style={{ padding: "8px 16px", fontSize: "0.88rem" }}
-            onClick={() => {
-              setEditingBook(null);
-              setIsEditModalOpen(true);
-            }}
-          >
-            ＋ Add Book
-          </button>
+          {isAdmin && (
+            <button
+              type="button"
+              className="main-button"
+              style={{ padding: "8px 16px", fontSize: "0.88rem" }}
+              onClick={() => {
+                setEditingBook(null);
+                setIsEditModalOpen(true);
+              }}
+            >
+              ＋ Add Book
+            </button>
+          )}
         </section>
 
         <div className="results-heading">
@@ -282,22 +284,24 @@ export default function SearchBooks() {
                         </button>
                       )}
 
-                      <button
-                        type="button"
-                        className="main-button"
-                        style={{
-                          padding: "6px 10px",
-                          fontSize: "0.8rem",
-                          background: "#334155",
-                        }}
-                        onClick={() => {
-                          setEditingBook(book);
-                          setIsEditModalOpen(true);
-                        }}
-                        title="Edit Book Details (Experiment 4)"
-                      >
-                        ✎ Edit
-                      </button>
+                      {isAdmin && (
+                        <button
+                          type="button"
+                          className="main-button"
+                          style={{
+                            padding: "6px 10px",
+                            fontSize: "0.8rem",
+                            background: "#334155",
+                          }}
+                          onClick={() => {
+                            setEditingBook(book);
+                            setIsEditModalOpen(true);
+                          }}
+                          title="Edit Book Details (Experiment 4)"
+                        >
+                          ✎ Edit
+                        </button>
+                      )}
                     </div>
                   </div>
                 </article>
@@ -378,11 +382,15 @@ export default function SearchBooks() {
         isOpen={Boolean(viewingBook)}
         book={viewingBook}
         onClose={() => setViewingBook(null)}
-        onEdit={(b) => {
-          setViewingBook(null);
-          setEditingBook(b);
-          setIsEditModalOpen(true);
-        }}
+        onEdit={
+          isAdmin
+            ? (b) => {
+                setViewingBook(null);
+                setEditingBook(b);
+                setIsEditModalOpen(true);
+              }
+            : null
+        }
         onBorrow={(b) => handleBorrowBook(b)}
       />
 

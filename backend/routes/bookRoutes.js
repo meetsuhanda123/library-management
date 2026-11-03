@@ -4,7 +4,19 @@ const router = express.Router();
 const Books = require("../models/Books");
 const { optionalAuth, verifyToken, requireAdmin } = require("../middleware/auth");
 
-const allowedFields = ["title", "author", "category", "available", "favorite", "price", "description"];
+const allowedFields = [
+  "title",
+  "author",
+  "category",
+  "available",
+  "favorite",
+  "price",
+  "description",
+  "isbn",
+  "publisher",
+  "publicationYear",
+  "quantity",
+];
 
 const pickBookFields = (body) =>
   Object.fromEntries(
@@ -49,6 +61,20 @@ const validateBookPayload = (book, partial = false) => {
     const numPrice = Number(book.price);
     if (isNaN(numPrice) || numPrice < 0) {
       errors.push("Price must be a valid non-negative number.");
+    }
+  }
+
+  if (book.quantity !== undefined) {
+    const qty = Number(book.quantity);
+    if (isNaN(qty) || qty < 0) {
+      errors.push("Quantity must be a valid non-negative number.");
+    }
+  }
+
+  if (book.publicationYear !== undefined && book.publicationYear !== "") {
+    const yr = Number(book.publicationYear);
+    if (isNaN(yr) || yr < 1000 || yr > 2100) {
+      errors.push("Publication year must be a valid 4-digit year.");
     }
   }
 
@@ -247,9 +273,9 @@ router.get("/:id", async (req, res) => {
 });
 
 // =========================================================================
-// Experiment 4: Add New Book (Create)
+// Experiment 4 & Admin: Add New Book (Admin Only)
 // =========================================================================
-router.post("/", optionalAuth, async (req, res) => {
+router.post("/", verifyToken, requireAdmin, async (req, res) => {
   try {
     const payload = pickBookFields(req.body);
     const errors = validateBookPayload(payload, false);
@@ -261,9 +287,22 @@ router.post("/", optionalAuth, async (req, res) => {
       });
     }
 
-    // Ensure price is numeric
+    // Ensure price and quantity are numeric
     payload.price = Number(payload.price);
-    if (payload.available === undefined) payload.available = true;
+    if (payload.quantity !== undefined && payload.quantity !== "") {
+      payload.quantity = Number(payload.quantity);
+      if (payload.available === undefined) {
+        payload.available = payload.quantity > 0;
+      }
+    } else {
+      payload.quantity = 1;
+      if (payload.available === undefined) payload.available = true;
+    }
+
+    if (payload.publicationYear !== undefined && payload.publicationYear !== "") {
+      payload.publicationYear = Number(payload.publicationYear);
+    }
+
     if (payload.favorite === undefined) payload.favorite = false;
 
     const book = await Books.create(payload);
@@ -288,9 +327,9 @@ router.post("/", optionalAuth, async (req, res) => {
 });
 
 // =========================================================================
-// Experiment 4: Update Book Details (Edit)
+// Experiment 4 & Admin: Update Book Details (Admin Only)
 // =========================================================================
-router.put("/:id", optionalAuth, async (req, res) => {
+router.put("/:id", verifyToken, requireAdmin, async (req, res) => {
   try {
     if (!mongoose.isValidObjectId(req.params.id)) {
       return res.status(400).json({ message: "Invalid book ID format." });
@@ -311,6 +350,17 @@ router.put("/:id", optionalAuth, async (req, res) => {
 
     if (payload.price !== undefined) {
       payload.price = Number(payload.price);
+    }
+
+    if (payload.quantity !== undefined && payload.quantity !== "") {
+      payload.quantity = Number(payload.quantity);
+      if (payload.available === undefined) {
+        payload.available = payload.quantity > 0;
+      }
+    }
+
+    if (payload.publicationYear !== undefined && payload.publicationYear !== "") {
+      payload.publicationYear = Number(payload.publicationYear);
     }
 
     const book = await Books.findByIdAndUpdate(
@@ -343,9 +393,9 @@ router.put("/:id", optionalAuth, async (req, res) => {
 });
 
 // =========================================================================
-// Experiment 4: Delete Book
+// Experiment 4 & Admin: Delete Book (Admin Only)
 // =========================================================================
-router.delete("/:id", optionalAuth, async (req, res) => {
+router.delete("/:id", verifyToken, requireAdmin, async (req, res) => {
   try {
     if (!mongoose.isValidObjectId(req.params.id)) {
       return res.status(400).json({ message: "Invalid book ID format." });

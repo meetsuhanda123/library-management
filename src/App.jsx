@@ -23,7 +23,7 @@ import { apiRequest } from "./api.js";
 import "./App.css";
 
 function Dashboard() {
-  const { user } = useLibrary();
+  const { user, isAdmin } = useLibrary();
   const { showToast } = useToast();
 
   const {
@@ -89,17 +89,19 @@ function Dashboard() {
               <Link className="explore-btn" to="/search-books">
                 Explore Books <span>→</span>
               </Link>
-              <button
-                type="button"
-                className="explore-btn"
-                style={{ background: "#104536", color: "#f8f7f0", border: "1px solid #d6bd80" }}
-                onClick={() => {
-                  setEditingBook(null);
-                  setIsBookModalOpen(true);
-                }}
-              >
-                ＋ Add a Book
-              </button>
+              {isAdmin && (
+                <button
+                  type="button"
+                  className="explore-btn"
+                  style={{ background: "#104536", color: "#f8f7f0", border: "1px solid #d6bd80" }}
+                  onClick={() => {
+                    setEditingBook(null);
+                    setIsBookModalOpen(true);
+                  }}
+                >
+                  ＋ Add a Book
+                </button>
+              )}
             </div>
           </div>
 
@@ -253,17 +255,19 @@ function Dashboard() {
                         >
                           👁
                         </button>
-                        <button
-                          type="button"
-                          className="admin-action-btn btn-edit"
-                          onClick={() => {
-                            setEditingBook(book);
-                            setIsBookModalOpen(true);
-                          }}
-                          title="Edit Book Details (Exp 4)"
-                        >
-                          ✎
-                        </button>
+                        {isAdmin && (
+                          <button
+                            type="button"
+                            className="admin-action-btn btn-edit"
+                            onClick={() => {
+                              setEditingBook(book);
+                              setIsBookModalOpen(true);
+                            }}
+                            title="Edit Book Details (Exp 4)"
+                          >
+                            ✎
+                          </button>
+                        )}
                         {book.available && (
                           <button
                             type="button"
@@ -304,11 +308,15 @@ function Dashboard() {
         isOpen={Boolean(viewingBook)}
         book={viewingBook}
         onClose={() => setViewingBook(null)}
-        onEdit={(b) => {
-          setViewingBook(null);
-          setEditingBook(b);
-          setIsBookModalOpen(true);
-        }}
+        onEdit={
+          isAdmin
+            ? (b) => {
+                setViewingBook(null);
+                setEditingBook(b);
+                setIsBookModalOpen(true);
+              }
+            : null
+        }
         onBorrow={(b) => handleBorrowBook(b)}
       />
 

@@ -1,6 +1,7 @@
 
 import { useState } from "react";
 import { Link } from "react-router-dom";
+import { useLibrary } from "../LibraryContext.jsx";
 import {
   Experiment3Provider,
   useExperiment3,
@@ -8,6 +9,7 @@ import {
 import "./Experiment3.css";
 
 function LibraryDashboard() {
+  const { user, isAdmin } = useLibrary();
   const {
     books,
     search,
@@ -99,12 +101,14 @@ function LibraryDashboard() {
               the stories you love in one place.
             </p>
 
-            <button
-              className="exp3-primary-btn"
-              onClick={() => setShowForm(!showForm)}
-            >
-              {showForm ? "Close form −" : "＋ Add a book"}
-            </button>
+            {isAdmin && (
+              <button
+                className="exp3-primary-btn"
+                onClick={() => setShowForm(!showForm)}
+              >
+                {showForm ? "Close form −" : "＋ Add a book"}
+              </button>
+            )}
           </div>
 
           <div className="exp3-hero-art">
@@ -155,7 +159,7 @@ function LibraryDashboard() {
         </section>
 
         {error && <p className="exp3-error" role="alert">{error}</p>}
-        {showForm && (
+        {isAdmin && showForm && (
           <section className="exp3-form-panel">
             <p className="exp3-eyebrow">GROW YOUR COLLECTION</p>
             <h2>Add a new book.</h2>
@@ -369,21 +373,23 @@ function LibraryDashboard() {
                         {book.available ? "Available" : "Borrowed"}
                       </span>
 
-                      <button
-                        type="button"
-                        className="exp3-remove-btn"
-                        onClick={() => {
-                          const confirmed = window.confirm(
-                            `Remove "${book.title}" from the collection?`
-                          );
+                      {isAdmin && (
+                        <button
+                          type="button"
+                          className="exp3-remove-btn"
+                          onClick={() => {
+                            const confirmed = window.confirm(
+                              `Remove "${book.title}" from the collection?`
+                            );
 
-                          if (confirmed) {
-                            removeBook(book.id).catch((err) => window.alert(err.message));
-                          }
-                        }}
-                      >
-                        Remove
-                      </button>
+                            if (confirmed) {
+                              removeBook(book.id).catch((err) => window.alert(err.message));
+                            }
+                          }}
+                        >
+                          Remove
+                        </button>
+                      )}
                     </div>
                   </div>
                 </article>

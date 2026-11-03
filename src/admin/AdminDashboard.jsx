@@ -27,6 +27,7 @@ export default function AdminDashboard() {
   // Filters inside Admin Tables
   const [bookSearch, setBookSearch] = useState("");
   const [bookCategory, setBookCategory] = useState("All");
+  const [bookAvailabilityFilter, setBookAvailabilityFilter] = useState("all");
   const [userSearch, setUserSearch] = useState("");
   const [loanStatusFilter, setLoanStatusFilter] = useState("all");
 
@@ -93,11 +94,18 @@ export default function AdminDashboard() {
 
   const handleToggleAvailability = async (book) => {
     try {
+      const nextAvailable = !book.available;
+      const payload = { available: nextAvailable };
+      if (nextAvailable && (!book.quantity || book.quantity <= 0)) {
+        payload.quantity = 1;
+      } else if (!nextAvailable) {
+        payload.quantity = 0;
+      }
       await apiRequest(`/api/books/${book.id}`, {
         method: "PUT",
-        body: JSON.stringify({ available: !book.available }),
+        body: JSON.stringify(payload),
       });
-      showToast(`Availability for "${book.title}" updated.`, "success");
+      showToast(`Availability for "${book.title}" set to ${nextAvailable ? "Available" : "Borrowed"}.`, "success");
       loadAdminData();
     } catch (err) {
       showToast(err.message || "Failed to update availability.", "error");
@@ -175,9 +183,12 @@ export default function AdminDashboard() {
 
   // Filtered views
   const filteredBooks = books.filter((b) => {
-    const matchesSearch = `${b.title} ${b.author}`.toLowerCase().includes(bookSearch.toLowerCase());
+    const matchesSearch = `${b.title} ${b.author} ${b.isbn || ""}`.toLowerCase().includes(bookSearch.toLowerCase());
     const matchesCategory = bookCategory === "All" || b.category === bookCategory;
-    return matchesSearch && matchesCategory;
+    const matchesAvail =
+      bookAvailabilityFilter === "all" ||
+      (bookAvailabilityFilter === "available" ? b.available : !b.available);
+    return matchesSearch && matchesCategory && matchesAvail;
   });
 
   const filteredUsers = users.filter((u) =>
@@ -395,6 +406,16 @@ export default function AdminDashboard() {
                     ))}
                   </select>
 
+                  <select
+                    value={bookAvailabilityFilter}
+                    onChange={(e) => setBookAvailabilityFilter(e.target.value)}
+                    className="admin-select"
+                  >
+                    <option value="all">All Status</option>
+                    <option value="available">Available Only</option>
+                    <option value="borrowed">Borrowed Only</option>
+                  </select>
+
                   <button
                     className="admin-btn admin-btn-primary"
                     onClick={() => {
@@ -413,7 +434,9 @@ export default function AdminDashboard() {
                         <th>Book Title</th>
                         <th>Author</th>
                         <th>Category</th>
+                        <th>ISBN / Year</th>
                         <th>Price</th>
+                        <th>Qty</th>
                         <th>Status</th>
                         <th>Availability</th>
                         <th style={{ textAlign: "right" }}>Actions</th>
@@ -434,7 +457,12 @@ export default function AdminDashboard() {
                           <td>
                             <span className="category-chip">{book.category}</span>
                           </td>
+                          <td style={{ fontSize: "0.82rem", color: "#64748b" }}>
+                            {book.isbn ? `ISBN: ${book.isbn}` : "—"}
+                            {book.publicationYear ? ` (${book.publicationYear})` : ""}
+                          </td>
                           <td>₹{book.price}</td>
+                          <td>{book.quantity !== undefined ? book.quantity : (book.available ? 1 : 0)}</td>
                           <td>
                             <span className={`status-pill ${book.available ? "pill-available" : "pill-borrowed"}`}>
                               {book.available ? "Available" : "Borrowed"}
@@ -448,7 +476,7 @@ export default function AdminDashboard() {
                                 color: book.available ? "#065f46" : "#92400e",
                               }}
                               onClick={() => handleToggleAvailability(book)}
-                              title="Click to toggle availability"
+                              title="Click to toggle availability and update inventory status"
                             >
                               Toggle: {book.available ? "Set Borrowed" : "Set Available"}
                             </button>

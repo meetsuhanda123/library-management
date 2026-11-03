@@ -24,6 +24,10 @@ export default function BookModal({ isOpen, onClose, bookToEdit, onSaved }) {
   const [category, setCategory] = useState("Fiction");
   const [price, setPrice] = useState("");
   const [available, setAvailable] = useState(true);
+  const [isbn, setIsbn] = useState("");
+  const [publisher, setPublisher] = useState("");
+  const [publicationYear, setPublicationYear] = useState(new Date().getFullYear());
+  const [quantity, setQuantity] = useState("1");
   const [description, setDescription] = useState("");
   const [submitting, setSubmitting] = useState(false);
   const [errors, setErrors] = useState({});
@@ -35,6 +39,10 @@ export default function BookModal({ isOpen, onClose, bookToEdit, onSaved }) {
       setCategory(bookToEdit.category || "Fiction");
       setPrice(bookToEdit.price !== undefined ? String(bookToEdit.price) : "299");
       setAvailable(bookToEdit.available !== undefined ? bookToEdit.available : true);
+      setIsbn(bookToEdit.isbn || "");
+      setPublisher(bookToEdit.publisher || "");
+      setPublicationYear(bookToEdit.publicationYear || new Date().getFullYear());
+      setQuantity(bookToEdit.quantity !== undefined ? String(bookToEdit.quantity) : "1");
       setDescription(bookToEdit.description || "");
     } else {
       setTitle("");
@@ -42,6 +50,10 @@ export default function BookModal({ isOpen, onClose, bookToEdit, onSaved }) {
       setCategory("Fiction");
       setPrice("350");
       setAvailable(true);
+      setIsbn("");
+      setPublisher("");
+      setPublicationYear(new Date().getFullYear());
+      setQuantity("1");
       setDescription("");
     }
     setErrors({});
@@ -74,6 +86,11 @@ export default function BookModal({ isOpen, onClose, bookToEdit, onSaved }) {
       errs.price = "Price cannot be negative.";
     }
 
+    const numQty = Number(quantity);
+    if (quantity !== "" && (isNaN(numQty) || numQty < 0)) {
+      errs.quantity = "Quantity cannot be negative.";
+    }
+
     setErrors(errs);
     return Object.keys(errs).length === 0;
   };
@@ -86,12 +103,17 @@ export default function BookModal({ isOpen, onClose, bookToEdit, onSaved }) {
     }
 
     setSubmitting(true);
+    const parsedQty = Number(quantity) || 0;
     const payload = {
       title: title.trim(),
       author: author.trim(),
       category: category.trim(),
       price: Number(price),
-      available,
+      available: parsedQty > 0 ? available : false,
+      isbn: isbn.trim(),
+      publisher: publisher.trim(),
+      publicationYear: publicationYear ? Number(publicationYear) : undefined,
+      quantity: parsedQty,
       description: description.trim(),
     };
 
@@ -191,6 +213,30 @@ export default function BookModal({ isOpen, onClose, bookToEdit, onSaved }) {
 
           <div className="form-row">
             <div className="form-group">
+              <label htmlFor="modal-isbn">ISBN / Barcode (Optional)</label>
+              <input
+                id="modal-isbn"
+                type="text"
+                placeholder="e.g. 978-0062315007"
+                value={isbn}
+                onChange={(e) => setIsbn(e.target.value)}
+              />
+            </div>
+
+            <div className="form-group">
+              <label htmlFor="modal-publisher">Publisher (Optional)</label>
+              <input
+                id="modal-publisher"
+                type="text"
+                placeholder="e.g. HarperOne"
+                value={publisher}
+                onChange={(e) => setPublisher(e.target.value)}
+              />
+            </div>
+          </div>
+
+          <div className="form-row">
+            <div className="form-group">
               <label htmlFor="modal-price">
                 Price (₹) <span className="req">*</span>
               </label>
@@ -208,17 +254,50 @@ export default function BookModal({ isOpen, onClose, bookToEdit, onSaved }) {
               {errors.price && <p className="field-error">{errors.price}</p>}
             </div>
 
-            <div className="form-group checkbox-group">
-              <label className="checkbox-label" htmlFor="modal-available">
-                <input
-                  id="modal-available"
-                  type="checkbox"
-                  checked={available}
-                  onChange={(e) => setAvailable(e.target.checked)}
-                />
-                <span>Mark book as Available for Borrowing</span>
-              </label>
+            <div className="form-group">
+              <label htmlFor="modal-year">Publication Year (Optional)</label>
+              <input
+                id="modal-year"
+                type="number"
+                min="1000"
+                max="2100"
+                placeholder="e.g. 2024"
+                value={publicationYear}
+                onChange={(e) => setPublicationYear(e.target.value)}
+              />
             </div>
+
+            <div className="form-group">
+              <label htmlFor="modal-qty">Quantity in Stock</label>
+              <input
+                id="modal-qty"
+                type="number"
+                min="0"
+                step="1"
+                placeholder="1"
+                value={quantity}
+                onChange={(e) => {
+                  const val = e.target.value;
+                  setQuantity(val);
+                  if (Number(val) === 0) setAvailable(false);
+                  else if (Number(val) > 0) setAvailable(true);
+                }}
+                className={errors.quantity ? "input-error" : ""}
+              />
+              {errors.quantity && <p className="field-error">{errors.quantity}</p>}
+            </div>
+          </div>
+
+          <div className="form-group checkbox-group" style={{ marginBottom: "16px" }}>
+            <label className="checkbox-label" htmlFor="modal-available">
+              <input
+                id="modal-available"
+                type="checkbox"
+                checked={available}
+                onChange={(e) => setAvailable(e.target.checked)}
+              />
+              <span>Mark book as Available for Borrowing</span>
+            </label>
           </div>
 
           <div className="form-group">

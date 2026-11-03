@@ -33,6 +33,25 @@ const bookSchema = new mongoose.Schema(
       required: [true, "Price is required"],
       min: [0, "Price cannot be negative"],
     },
+    isbn: {
+      type: String,
+      trim: true,
+      default: "",
+    },
+    publisher: {
+      type: String,
+      trim: true,
+      default: "",
+    },
+    publicationYear: {
+      type: Number,
+      default: () => new Date().getFullYear(),
+    },
+    quantity: {
+      type: Number,
+      default: 1,
+      min: [0, "Quantity cannot be negative"],
+    },
     description: {
       type: String,
       trim: true,
