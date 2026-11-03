@@ -179,9 +179,9 @@ router.post("/return/:recordId", verifyToken, async (req, res) => {
 });
 
 // =========================================================================
-// GET /api/borrow/my-loans - Current user loans
+// GET /api/borrow/my-loans (or /history) - Current user loans
 // =========================================================================
-router.get("/my-loans", verifyToken, async (req, res) => {
+router.get(["/my-loans", "/history"], verifyToken, async (req, res) => {
   try {
     const records = await BorrowRecord.find({ user: req.user._id })
       .populate("book")

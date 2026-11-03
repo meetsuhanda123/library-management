@@ -41,7 +41,7 @@ function Dashboard() {
   // Experiment 8 Real-time WebSocket connection
   useSocket(() => {
     refreshBooks();
-  });
+  }, true);
 
   const [isBookModalOpen, setIsBookModalOpen] = useState(false);
   const [editingBook, setEditingBook] = useState(null);

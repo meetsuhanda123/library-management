@@ -74,8 +74,8 @@ export default function AdminDashboard() {
     }
   }, [isAdmin, loadAdminData]);
 
-  // Real-time synchronization for Admin Dashboard
-  useSocket(loadAdminData);
+  // Real-time synchronization for Admin Dashboard (silent refresh, toasts handled by root App)
+  useSocket(loadAdminData, false);
 
   // Book Handlers
   const handleDeleteBook = async (book) => {

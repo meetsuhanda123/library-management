@@ -88,8 +88,8 @@ export default function SearchBooks() {
     fetchBooks();
   }, [fetchBooks]);
 
-  // Real-time synchronization
-  useSocket(fetchBooks);
+  // Real-time synchronization (silent refresh, toasts handled by root App)
+  useSocket(fetchBooks, false);
 
   // Reset to page 1 whenever search, category, or availability changes
   const handleSearchChange = (val) => {

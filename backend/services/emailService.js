@@ -8,7 +8,7 @@ const BREVO_API_URL = "https://api.brevo.com/v3/smtp/email";
 async function sendEmail({ to, subject, htmlContent, textContent }) {
   const apiKey = process.env.BREVO_API_KEY;
   const senderEmail = process.env.BREVO_SENDER_EMAIL || "noreply@libraryhub.local";
-  const senderName = "LibraryHub Notifications";
+  const senderName = process.env.BREVO_SENDER_NAME || "LibraryHub Notifications";
 
   if (!apiKey) {
     console.log(`[Brevo Email Service] Skipped email to ${to} (BREVO_API_KEY not configured). Subject: "${subject}"`);
