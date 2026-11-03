@@ -10,13 +10,15 @@ const User = require("./models/User");
 const app = express();
 const server = http.createServer(app);
 
-// Allowed frontend origins
+// Allowed frontend origins (Local & Production Vercel)
 const defaultOrigins = [
+  "https://library-management-rose-eight.vercel.app",
   "http://localhost:5273",
   "http://localhost:5173",
   "http://localhost:5174",
   "http://127.0.0.1:5273",
   "http://127.0.0.1:5173",
+  "http://localhost:80",
 ];
 
 const envOrigins = (process.env.CLIENT_URL || "")
@@ -26,16 +28,26 @@ const envOrigins = (process.env.CLIENT_URL || "")
 
 const allowedOrigins = Array.from(new Set([...defaultOrigins, ...envOrigins]));
 
+// Universal origin validator for local dev, Vercel deployments, and Render domains
+function isOriginAllowed(origin) {
+  if (!origin) return true; // Server-to-server or curl requests
+  if (allowedOrigins.includes(origin)) return true;
+  if (origin.startsWith("http://localhost:") || origin.startsWith("http://127.0.0.1:")) return true;
+  if (origin.endsWith(".vercel.app") || origin.endsWith(".onrender.com")) return true;
+  return false;
+}
+
 // Socket.IO Setup (Experiment 8 Real-time Notifications)
 const io = new Server(server, {
   cors: {
     origin: (origin, callback) => {
-      if (!origin || allowedOrigins.includes(origin) || origin.startsWith("http://localhost:")) {
+      if (isOriginAllowed(origin)) {
         return callback(null, true);
       }
-      return callback(null, true); // Allow during local development
+      return callback(null, true); // Allow during production handshakes
     },
     methods: ["GET", "POST", "PUT", "DELETE"],
+    credentials: true,
   },
 });
 
@@ -49,18 +61,23 @@ io.on("connection", (socket) => {
   });
 });
 
-// Middleware
+// CORS Middleware
 app.use(
   cors({
     origin(origin, callback) {
-      if (!origin || allowedOrigins.includes(origin) || origin.startsWith("http://localhost:")) {
+      if (isOriginAllowed(origin)) {
         return callback(null, true);
       }
       return callback(new Error(`Origin not allowed by CORS: ${origin}`));
     },
     credentials: true,
+    methods: ["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"],
+    allowedHeaders: ["Content-Type", "Authorization"],
   })
 );
+
+// Preflight handler
+app.options("*", cors());
 
 app.use(express.json({ limit: "2mb" }));
 

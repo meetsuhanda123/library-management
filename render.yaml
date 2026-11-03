@@ -1,9 +1,9 @@
 services:
   - type: web
-    name: library-management-system-backend
+    name: library-management-backend
     env: node
     plan: free
-    rootDir: library-management-system/backend
+    rootDir: backend
     buildCommand: npm install
     startCommand: node server.js
     envVars:
@@ -11,16 +11,15 @@ services:
         value: production
       - key: PORT
         value: 5000
-      - key: MONGO_URI
-        sync: false
       - key: CLIENT_URL
-        sync: false
+        value: https://library-management-rose-eight.vercel.app,http://localhost:5273
       - key: JWT_SECRET
         generateValue: true
+      - key: MONGO_URI
+        sync: false
       - key: BREVO_API_KEY
         sync: false
       - key: BREVO_SENDER_EMAIL
         value: noreply@libraryhub.local
       - key: BREVO_SENDER_NAME
         value: LibraryHub Notifications
-

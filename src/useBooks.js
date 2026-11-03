@@ -13,7 +13,8 @@ export default function useBooks() {
     setError("");
     try {
       const data = await apiRequest("/api/books");
-      setBooks(data.map(normalizeBook));
+      const list = Array.isArray(data) ? data : Array.isArray(data?.books) ? data.books : [];
+      setBooks(list.map(normalizeBook));
     } catch (err) {
       setError(err.message || "Unable to load books. Check that the backend is running.");
       setBooks([]);

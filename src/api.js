@@ -9,10 +9,32 @@ export async function apiRequest(path, options = {}) {
     ...options.headers,
   };
 
-  const response = await fetch(`${API_BASE_URL}${path}`, {
-    ...options,
-    headers,
-  });
+  let response;
+  try {
+    response = await fetch(`${API_BASE_URL}${path}`, {
+      ...options,
+      headers,
+    });
+  } catch (err) {
+    console.error(`[API Network Error] Failed to fetch ${API_BASE_URL}${path}:`, err);
+    throw new Error(
+      `Failed to connect to backend server (${API_BASE_URL}). If using Render, the service may be starting up (allow 30-50 seconds).`
+    );
+  }
+
+  const contentType = response.headers.get("content-type") || "";
+
+  // Guard against HTML response when JSON is expected (e.g. Render serving static site or 404 HTML)
+  if (!contentType.includes("application/json")) {
+    const rawText = await response.text().catch(() => "");
+    if (!response.ok) {
+      throw new Error(`Server returned error ${response.status}: ${rawText.slice(0, 100)}`);
+    }
+    // If status 200 OK but returned HTML, backend URL is misconfigured
+    throw new Error(
+      `Received HTML instead of JSON from ${API_BASE_URL}${path}. The backend URL points to a static page instead of the Express API.`
+    );
+  }
 
   const data = await response.json().catch(() => ({}));
   if (!response.ok) {
