@@ -7,6 +7,7 @@ const { verifyToken, requireAdmin } = require("../middleware/auth");
 const {
   sendBorrowConfirmation,
   sendReturnConfirmation,
+  sendOverdueNotice,
 } = require("../services/emailService");
 
 // Helper to flag overdue records
@@ -113,14 +114,17 @@ router.post("/return/:recordId", verifyToken, async (req, res) => {
       return res.status(400).json({ message: "Invalid transaction ID format." });
     }
 
-    const record = await BorrowRecord.findById(recordId).populate("book");
+    const record = await BorrowRecord.findById(recordId)
+      .populate("book")
+      .populate("user", "name email role");
     if (!record) {
       return res.status(404).json({ message: "Borrow record not found." });
     }
 
     // Only borrower or an admin can confirm return
+    const recordUserId = record.user?._id ? record.user._id.toString() : record.user.toString();
     if (
-      record.user.toString() !== req.user._id.toString() &&
+      recordUserId !== req.user._id.toString() &&
       req.user.role !== "admin"
     ) {
       return res.status(403).json({
@@ -161,9 +165,10 @@ router.post("/return/:recordId", verifyToken, async (req, res) => {
       });
     }
 
-    // Brevo email notification
+    // Brevo email notification to borrower
     if (record.book) {
-      sendReturnConfirmation(req.user, record.book).catch((e) =>
+      const recipient = record.user && record.user.email ? record.user : req.user;
+      sendReturnConfirmation(recipient, record.book).catch((e) =>
         console.error("Return email error:", e)
       );
     }
@@ -257,6 +262,41 @@ router.get("/summary", verifyToken, requireAdmin, async (_req, res) => {
     });
   } catch (error) {
     res.status(500).json({ message: "Failed to fetch borrowing summary", error: error.message });
+  }
+});
+
+// =========================================================================
+// POST /api/borrow/notify-overdue/:recordId - Send overdue email notice (Admin Only)
+// =========================================================================
+router.post("/notify-overdue/:recordId", verifyToken, requireAdmin, async (req, res) => {
+  try {
+    const { recordId } = req.params;
+    if (!mongoose.isValidObjectId(recordId)) {
+      return res.status(400).json({ message: "Invalid transaction ID format." });
+    }
+
+    const record = await BorrowRecord.findById(recordId)
+      .populate("book")
+      .populate("user");
+
+    if (!record) {
+      return res.status(404).json({ message: "Borrow record not found." });
+    }
+
+    if (record.status !== "borrowed" || new Date(record.dueDate) >= new Date()) {
+      return res.status(400).json({ message: "This book loan is not overdue." });
+    }
+
+    const enriched = enrichRecord(record);
+    const emailResult = await sendOverdueNotice(record.user, record.book, enriched);
+
+    res.json({
+      message: `Overdue notice dispatched for "${record.book?.title || 'Book'}" to ${record.user?.email || 'patron'}.`,
+      emailResult,
+    });
+  } catch (error) {
+    console.error("Error sending overdue notice:", error);
+    res.status(500).json({ message: "Failed to send notice", error: error.message });
   }
 });
 

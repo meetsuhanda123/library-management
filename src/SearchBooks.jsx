@@ -385,10 +385,10 @@ export default function SearchBooks() {
         onEdit={
           isAdmin
             ? (b) => {
-                setViewingBook(null);
-                setEditingBook(b);
-                setIsEditModalOpen(true);
-              }
+              setViewingBook(null);
+              setEditingBook(b);
+              setIsEditModalOpen(true);
+            }
             : null
         }
         onBorrow={(b) => handleBorrowBook(b)}

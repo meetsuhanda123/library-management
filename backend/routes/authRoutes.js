@@ -1,8 +1,8 @@
 const express = require("express");
 const jwt = require("jsonwebtoken");
 const User = require("../models/User");
-const { verifyToken } = require("../middleware/auth");
-const { sendWelcomeEmail } = require("../services/emailService");
+const { verifyToken, requireAdmin } = require("../middleware/auth");
+const { sendWelcomeEmail, verifyBrevoConfig, sendEmail } = require("../services/emailService");
 
 const router = express.Router();
 const JWT_SECRET = process.env.JWT_SECRET || "super_secret_library_hub_jwt_key_2026_secure";
@@ -144,6 +144,47 @@ router.get("/me", verifyToken, async (req, res) => {
       createdAt: req.user.createdAt,
     },
   });
+});
+
+// GET /api/auth/brevo-status (Admin Only Diagnostic Check)
+router.get("/brevo-status", verifyToken, requireAdmin, async (_req, res) => {
+  try {
+    const status = await verifyBrevoConfig();
+    res.json(status);
+  } catch (error) {
+    res.status(500).json({ message: "Failed to check Brevo status", error: error.message });
+  }
+});
+
+// POST /api/auth/test-email (Admin Only Test Email Trigger)
+router.post("/test-email", verifyToken, requireAdmin, async (req, res) => {
+  try {
+    const { to } = req.body;
+    const recipient = to || req.user.email;
+    const result = await sendEmail({
+      to: recipient,
+      subject: "LibraryHub Test Notification 📬",
+      htmlContent: `
+        <div style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; max-width: 580px; margin: auto; padding: 24px; border: 1px solid #e2e8f0; border-radius: 8px;">
+          <h2 style="color: #0f172a; margin: 0 0 12px;">LibraryHub Brevo Integration Test</h2>
+          <p style="color: #475569;">Hello ${req.user.name},</p>
+          <p style="color: #475569;">This is a test notification confirming that Brevo transactional email delivery is functioning properly.</p>
+          <div style="background: #f1f5f9; padding: 12px; border-radius: 6px; font-size: 13px; color: #475569; margin: 16px 0;">
+            <p style="margin: 0;"><strong>Timestamp:</strong> ${new Date().toISOString()}</p>
+            <p style="margin: 4px 0 0;"><strong>Recipient:</strong> ${recipient}</p>
+          </div>
+          <p style="margin-top: 20px; font-size: 12px; color: #94a3b8;">© 2026 LibraryHub Notifications</p>
+        </div>
+      `,
+    });
+
+    res.json({
+      message: result.success ? `Test email sent successfully to ${recipient}!` : `Email delivery failed.`,
+      result,
+    });
+  } catch (error) {
+    res.status(500).json({ message: "Failed to send test email", error: error.message });
+  }
 });
 
 module.exports = router;

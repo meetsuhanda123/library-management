@@ -170,6 +170,32 @@ export default function AdminDashboard() {
     }
   };
 
+  // Brevo Email Handlers
+  const handleTestEmail = async () => {
+    try {
+      showToast("Dispatching test notification via Brevo...", "info");
+      const res = await apiRequest("/api/auth/test-email", { method: "POST" });
+      if (res.result?.success) {
+        showToast(res.message || "Test email sent successfully!", "success");
+      } else {
+        const detail = res.result?.error?.message || res.result?.reason || "Check Brevo API Key";
+        showToast(`Email status: ${detail}`, "warning");
+      }
+    } catch (err) {
+      showToast(err.message || "Failed to trigger test email.", "error");
+    }
+  };
+
+  const handleSendOverdueNotice = async (recordId) => {
+    try {
+      showToast("Sending overdue email notice via Brevo...", "info");
+      const res = await apiRequest(`/api/borrow/notify-overdue/${recordId}`, { method: "POST" });
+      showToast(res.message || "Overdue notice sent!", "success");
+    } catch (err) {
+      showToast(err.message || "Failed to dispatch overdue notice.", "error");
+    }
+  };
+
   if (authLoading || !user || !isAdmin) {
     return (
       <div className="library-page">
@@ -370,6 +396,9 @@ export default function AdminDashboard() {
                       </button>
                       <button className="admin-quick-btn" onClick={() => setActiveTab("borrowing")}>
                         📋 Check Overdue Loans
+                      </button>
+                      <button className="admin-quick-btn" onClick={handleTestEmail}>
+                        ✉️ Trigger Brevo Test Email
                       </button>
                       <Link to="/statistics" className="admin-quick-btn">
                         📊 Open MongoDB Aggregations Page →
@@ -653,18 +682,30 @@ export default function AdminDashboard() {
                           </td>
                           <td>{loan.fine > 0 ? `₹${loan.fine}` : "—"}</td>
                           <td style={{ textAlign: "right" }}>
-                            {loan.status !== "returned" ? (
-                              <button
-                                className="admin-action-btn btn-primary-action"
-                                onClick={() => handleAdminReturnBook(loan._id, loan.book?.title)}
-                              >
-                                Confirm Return ✓
-                              </button>
-                            ) : (
-                              <span style={{ color: "#059669", fontSize: "0.85rem", fontWeight: "600" }}>
-                                Complete
-                              </span>
-                            )}
+                            <div style={{ display: "inline-flex", gap: "6px", justifyContent: "flex-end" }}>
+                              {loan.status === "overdue" && (
+                                <button
+                                  className="admin-action-btn"
+                                  style={{ background: "#fef2f2", color: "#991b1b" }}
+                                  onClick={() => handleSendOverdueNotice(loan._id)}
+                                  title="Send overdue reminder email via Brevo"
+                                >
+                                  ⚠️ Send Notice
+                                </button>
+                              )}
+                              {loan.status !== "returned" ? (
+                                <button
+                                  className="admin-action-btn btn-primary-action"
+                                  onClick={() => handleAdminReturnBook(loan._id, loan.book?.title)}
+                                >
+                                  Confirm Return ✓
+                                </button>
+                              ) : (
+                                <span style={{ color: "#059669", fontSize: "0.85rem", fontWeight: "600" }}>
+                                  Complete
+                                </span>
+                              )}
+                            </div>
                           </td>
                         </tr>
                       ))}
