@@ -1,0 +1,117 @@
+/* Toast Notifications styling matching LibraryHub Aesthetic */
+.toast-container {
+  position: fixed;
+  bottom: 24px;
+  right: 24px;
+  z-index: 9999;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  max-width: 400px;
+  width: calc(100% - 48px);
+  pointer-events: none;
+}
+
+.toast-card {
+  pointer-events: auto;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 14px 18px;
+  border-radius: 12px;
+  box-shadow: 0 10px 25px -5px rgba(15, 23, 42, 0.15), 0 8px 10px -6px rgba(15, 23, 42, 0.1);
+  font-family: inherit;
+  font-size: 0.9rem;
+  font-weight: 500;
+  animation: toastSlideIn 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  backdrop-filter: blur(8px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+@keyframes toastSlideIn {
+  from {
+    transform: translateY(20px) scale(0.95);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0) scale(1);
+    opacity: 1;
+  }
+}
+
+.toast-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  font-size: 0.85rem;
+  font-weight: bold;
+  flex-shrink: 0;
+}
+
+.toast-message {
+  margin: 0;
+  flex-grow: 1;
+  line-height: 1.4;
+  word-break: break-word;
+}
+
+.toast-close {
+  background: transparent;
+  border: none;
+  font-size: 1.25rem;
+  cursor: pointer;
+  padding: 0 4px;
+  line-height: 1;
+  opacity: 0.6;
+  transition: opacity 0.15s ease;
+  color: inherit;
+}
+
+.toast-close:hover {
+  opacity: 1;
+}
+
+/* Toast Variants */
+.toast-success {
+  background: #064e3b;
+  color: #ecfdf5;
+  border-color: #059669;
+}
+.toast-success .toast-icon {
+  background: #10b981;
+  color: #064e3b;
+}
+
+.toast-error {
+  background: #7f1d1d;
+  color: #fef2f2;
+  border-color: #dc2626;
+}
+.toast-error .toast-icon {
+  background: #ef4444;
+  color: #fff;
+}
+
+.toast-warning {
+  background: #78350f;
+  color: #fffbeb;
+  border-color: #d97706;
+}
+.toast-warning .toast-icon {
+  background: #f59e0b;
+  color: #78350f;
+}
+
+.toast-info {
+  background: #0f172a;
+  color: #f8fafc;
+  border-color: #334155;
+}
+.toast-info .toast-icon {
+  background: #38bdf8;
+  color: #0f172a;
+}
+

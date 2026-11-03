@@ -1,0 +1,539 @@
+/* LIBRARYHUB - LOGIN PAGE */
+
+.lh-login-page {
+  min-height: 100vh;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  background: #faf9f5;
+  color: #173f32;
+  font-family: 'DM Sans', sans-serif;
+}
+
+/* LEFT VISUAL PANEL */
+
+.lh-login-visual {
+  position: relative;
+  min-height: 100vh;
+  padding: 35px 8%;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  overflow: hidden;
+  background: linear-gradient(145deg, #123f31 0%, #194c3b 65%, #285c45 100%);
+  color: #fffaf0;
+}
+
+.lh-login-brand {
+  position: relative;
+  z-index: 2;
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  width: fit-content;
+  color: #fffaf0;
+  font-size: 23px;
+  font-weight: 700;
+  letter-spacing: -.7px;
+}
+
+.lh-brand-icon {
+  font-size: 26px;
+}
+
+.lh-login-brand > span:last-child {
+  color: #e4c783;
+  margin-left: -10px;
+}
+
+.lh-visual-content {
+  position: relative;
+  z-index: 1;
+  max-width: 500px;
+  margin: 45px auto;
+  width: 100%;
+}
+
+.lh-kicker {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 2px;
+  color: #dfc68d;
+}
+
+.lh-kicker-line {
+  width: 25px;
+  height: 1px;
+  background: #dfc68d;
+}
+
+.lh-login-visual .lh-visual-content h1 {
+  margin: 27px 0 18px;
+  color: #fffaf0;
+  font-family: 'Playfair Display', Georgia, serif;
+  font-size: clamp(43px, 5vw, 68px);
+  font-weight: 500;
+  letter-spacing: -2px;
+  line-height: 1.12;
+}
+
+.lh-login-visual .lh-visual-content h1 em {
+  color: #e2c17e;
+  font-weight: 400;
+}
+
+.lh-visual-description {
+  max-width: 350px;
+  color: #d1ded4;
+  font-size: 14px;
+  line-height: 1.9;
+}
+
+/* DECORATIVE BOOKS */
+
+.lh-book-art {
+  position: relative;
+  height: 210px;
+  max-width: 410px;
+  margin-top: 30px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+.lh-art-circle {
+  position: absolute;
+  width: 240px;
+  height: 180px;
+  border-radius: 50%;
+  background: #ffffff0b;
+  transform: rotate(-14deg);
+}
+
+.lh-art-leaf {
+  position: absolute;
+  right: 9%;
+  top: 2px;
+  color: #dfc783;
+  font-size: 40px;
+  transform: rotate(15deg);
+}
+
+.lh-art-book {
+  position: relative;
+  width: 75%;
+  min-height: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 3px 8px 8px 3px;
+  box-shadow: 0 8px 15px #081e161e;
+  font-family: 'Playfair Display', Georgia, serif;
+  font-size: 12px;
+  letter-spacing: .5px;
+}
+
+.lh-art-book-one {
+  z-index: 3;
+  color: #f9f0d9;
+  background: #d2b879;
+  border-left: 6px solid #b49a60;
+  transform: rotate(-5deg) translateX(7px);
+}
+
+.lh-art-book-two {
+  z-index: 2;
+  color: #264c3b;
+  background: #f3e6c8;
+  border-left: 6px solid #d4c29d;
+  transform: rotate(2deg) translateY(-1px);
+}
+
+.lh-art-book-three {
+  z-index: 1;
+  color: #fff3e4;
+  background: #a65a3c;
+  border-left: 6px solid #82432d;
+  transform: rotate(-3deg) translateY(-2px);
+}
+
+.lh-art-caption {
+  color: #e4d7b2;
+  font-family: 'Playfair Display', Georgia, serif;
+  font-style: italic;
+  font-size: 13px;
+  text-align: right;
+  max-width: 410px;
+}
+
+.lh-visual-footer {
+  display: flex;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 10px;
+  padding-top: 20px;
+  border-top: 1px solid #ffffff24;
+  color: #d1dcd0;
+  font-size: 9px;
+  letter-spacing: 1.5px;
+}
+
+/* RIGHT LOGIN SIDE */
+
+.lh-login-side {
+  min-height: 100vh;
+  padding: 35px 9%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-between;
+  gap: 30px;
+  background: #faf9f5;
+}
+
+.lh-back-home {
+  align-self: flex-end;
+  color: #64756a;
+  font-size: 12px;
+  font-weight: 500;
+  transition: color .2s;
+}
+
+.lh-back-home:hover {
+  color: #b28b4c;
+}
+
+.lh-back-home span {
+  margin-right: 7px;
+}
+
+.lh-login-card {
+  width: 100%;
+  max-width: 390px;
+  margin: auto 0;
+  padding: 36px 34px;
+  border: 1px solid #ebe6da;
+  border-radius: 15px;
+  background: #fffefa;
+  box-shadow: 0 15px 45px #233e2d09;
+}
+
+.lh-welcome-icon {
+  width: 43px;
+  height: 43px;
+  display: grid;
+  place-items: center;
+  margin-bottom: 25px;
+  border-radius: 12px;
+  background: #f4ecd9;
+  color: #9d7940;
+  font-size: 23px;
+}
+
+.lh-form-kicker {
+  margin-bottom: 10px;
+  color: #9b7c47;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 2px;
+}
+
+.lh-login-card h2 {
+  margin: 0 0 10px;
+  color: #173f32;
+  font-family: 'Playfair Display', Georgia, serif;
+  font-size: 34px;
+  font-weight: 500;
+  letter-spacing: -1px;
+  line-height: 1.2;
+}
+
+.lh-form-description {
+  margin: 0 0 27px;
+  color: #7b827a;
+  font-size: 12px;
+  line-height: 1.8;
+}
+
+.lh-login-form {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.lh-login-form label {
+  color: #344c3e;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.lh-login-form > input,
+.lh-password-field input {
+  width: 100%;
+  min-width: 0;
+  height: 47px;
+  padding: 0 14px;
+  border: 1px solid #e5e2d8;
+  border-radius: 7px;
+  background: #fdfcf8;
+  color: #173f32;
+  font-size: 12px;
+  outline: none;
+  transition: border-color .2s, box-shadow .2s;
+}
+
+.lh-login-form input::placeholder {
+  color: #a1a49a;
+}
+
+.lh-login-form > input:focus,
+.lh-password-field input:focus {
+  border-color: #47785d;
+  box-shadow: 0 0 0 3px #47785d15;
+}
+
+.lh-password-heading {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 8px;
+}
+
+.lh-password-field {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  border: 1px solid #e5e2d8;
+  border-radius: 7px;
+  background: #fdfcf8;
+}
+
+.lh-password-field:focus-within {
+  border-color: #47785d;
+  box-shadow: 0 0 0 3px #47785d15;
+}
+
+.lh-password-field input {
+  flex: 1;
+  border: 0;
+  box-shadow: none !important;
+  background: transparent;
+}
+
+.lh-show-password {
+  padding: 8px 12px;
+  border: 0;
+  background: transparent;
+  color: #52745d;
+  font-size: 11px;
+  font-weight: 700;
+}
+
+.lh-show-password:hover {
+  color: #a27d43;
+}
+
+.lh-login-error {
+  margin: 3px 0;
+  color: #a13f32;
+  font-size: 12px;
+}
+
+.lh-submit-button {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  min-height: 49px;
+  margin-top: 12px;
+  padding: 0 18px;
+  border: 0;
+  border-radius: 7px;
+  background: #154737;
+  color: #fffdf5;
+  font-size: 12px;
+  font-weight: 600;
+  box-shadow: 0 5px 12px #15473716;
+  transition: background .2s, transform .2s;
+}
+
+.lh-submit-button span {
+  font-size: 19px;
+}
+
+.lh-submit-button:hover {
+  background: #236449;
+  transform: translateY(-2px);
+}
+
+.lh-form-divider {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 25px 0 19px;
+}
+
+.lh-form-divider span {
+  flex: 1;
+  height: 1px;
+  background: #ece8df;
+}
+
+.lh-form-divider p {
+  color: #99978a;
+  font-size: 8px;
+  letter-spacing: 1px;
+  white-space: nowrap;
+}
+
+.lh-demo-note {
+  display: flex;
+  align-items: flex-start;
+  gap: 11px;
+  padding: 13px;
+  border-radius: 8px;
+  background: #f4f2e9;
+}
+
+.lh-demo-note > span {
+  color: #a4834a;
+  font-size: 17px;
+}
+
+.lh-demo-note p {
+  color: #777e72;
+  font-size: 10px;
+  line-height: 1.8;
+}
+
+.lh-demo-note strong {
+  color: #385342;
+  font-size: 11px;
+}
+
+.lh-login-footer {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 7px;
+  color: #899087;
+  font-size: 10px;
+}
+
+.lh-login-footer a {
+  color: #466b51;
+}
+
+.lh-login-footer a:hover {
+  color: #a27d43;
+}
+
+.lh-footer-dot {
+  color: #c2b18c;
+}
+
+/* TABLETS */
+
+@media (max-width: 900px) {
+  .lh-login-page {
+    grid-template-columns: .9fr 1.1fr;
+  }
+
+  .lh-login-visual {
+    padding: 30px 7%;
+  }
+
+  .lh-login-side {
+    padding: 30px 6%;
+  }
+
+  .lh-login-card {
+    padding: 29px 24px;
+  }
+
+  .lh-login-visual .lh-visual-content h1 {
+    font-size: 44px;
+  }
+}
+
+/* MOBILE */
+
+@media (max-width: 650px) {
+  .lh-login-page {
+    grid-template-columns: 1fr;
+  }
+
+  .lh-login-visual {
+    min-height: auto;
+    padding: 25px 7% 20px;
+  }
+
+  .lh-login-brand {
+    font-size: 21px;
+  }
+
+  .lh-visual-content {
+    margin: 38px auto 15px;
+  }
+
+  .lh-login-visual .lh-visual-content h1 {
+    font-size: 45px;
+  }
+
+  .lh-visual-description {
+    font-size: 13px;
+  }
+
+  .lh-book-art {
+    height: 155px;
+    margin-top: 15px;
+  }
+
+  .lh-art-book {
+    min-height: 35px;
+    font-size: 10px;
+  }
+
+  .lh-art-caption {
+    font-size: 11px;
+  }
+
+  .lh-visual-footer {
+    margin-top: 10px;
+    font-size: 8px;
+  }
+
+  .lh-login-side {
+    min-height: auto;
+    padding: 24px 6% 28px;
+    gap: 25px;
+  }
+
+  .lh-back-home {
+    align-self: flex-start;
+  }
+
+  .lh-login-card {
+    max-width: 440px;
+    padding: 29px 23px;
+  }
+
+  .lh-login-card h2 {
+    font-size: 31px;
+  }
+
+  .lh-login-footer {
+    text-align: center;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .lh-login-page *,
+  .lh-login-page *::before,
+  .lh-login-page *::after {
+    transition: none !important;
+  }
+}

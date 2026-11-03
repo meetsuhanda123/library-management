@@ -1,0 +1,26 @@
+services:
+  - type: web
+    name: library-management-system-backend
+    env: node
+    plan: free
+    rootDir: library-management-system/backend
+    buildCommand: npm install
+    startCommand: node server.js
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: 5000
+      - key: MONGO_URI
+        sync: false
+      - key: CLIENT_URL
+        sync: false
+      - key: JWT_SECRET
+        generateValue: true
+      - key: BREVO_API_KEY
+        sync: false
+      - key: BREVO_SENDER_EMAIL
+        value: noreply@libraryhub.local
+      - key: BREVO_SENDER_NAME
+        value: LibraryHub Notifications
+
