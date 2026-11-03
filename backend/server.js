@@ -61,23 +61,20 @@ io.on("connection", (socket) => {
   });
 });
 
-// CORS Middleware
-app.use(
-  cors({
-    origin(origin, callback) {
-      if (isOriginAllowed(origin)) {
-        return callback(null, true);
-      }
-      return callback(new Error(`Origin not allowed by CORS: ${origin}`));
-    },
-    credentials: true,
-    methods: ["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"],
-    allowedHeaders: ["Content-Type", "Authorization"],
-  })
-);
+// CORS Configuration & Middleware
+const corsOptions = {
+  origin(origin, callback) {
+    if (isOriginAllowed(origin)) {
+      return callback(null, true);
+    }
+    return callback(new Error(`Origin not allowed by CORS: ${origin}`));
+  },
+  credentials: true,
+  methods: ["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"],
+  allowedHeaders: ["Content-Type", "Authorization"],
+};
 
-// Preflight handler
-app.options("*", cors());
+app.use(cors(corsOptions));
 
 app.use(express.json({ limit: "2mb" }));
 
